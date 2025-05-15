@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Health Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn.register {
+            background-color: #2ecc71;
+        }
+        .btn.register:hover {
+            background-color: #27ae60;
+        }
+        .features {
+            margin-top: 50px;
+        }
+        .features h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .feature-item {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .feature-item h3 {
+            color: #3498db;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>School Health Management System</h1>
+        <p>Manage student health records, vaccinations, and medical events</p>
+    </div>
+
+    <div class="actions">
+        <a href="login.html" class="btn">Login</a>
+        <a href="register.html" class="btn register">Register</a>
+    </div>
+
+    <div class="features">
+        <h2>Features</h2>
+        <div class="feature-list">
+            <div class="feature-item">
+                <h3>Health Records</h3>
+                <p>Maintain comprehensive health records for students, including medical history, allergies, and chronic conditions.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Vaccination Tracking</h3>
+                <p>Track student vaccinations, schedule upcoming vaccinations, and send reminders to parents.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Health Checkups</h3>
+                <p>Record regular health checkups, growth measurements, and developmental assessments.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Medical Events</h3>
+                <p>Document medical incidents, treatments provided, and follow-up actions required.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is already logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+            // Redirect to a dashboard or user profile page
+            // For now, we'll just redirect to the login page which will show user info
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
