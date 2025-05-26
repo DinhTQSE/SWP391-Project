@@ -1,7 +1,9 @@
 package com.swp391_8.schoolhealth.dto;
 
+import com.swp391_8.schoolhealth.model.User.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -25,4 +27,7 @@ public class SignupRequest {
     private String email;
 
     private String phone;
+
+    @NotNull
+    private UserRole role;
 }

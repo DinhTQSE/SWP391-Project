@@ -64,9 +64,11 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/*.html").permitAll()
+                .requestMatchers("/register.html").permitAll()
                 .requestMatchers("/css/**").permitAll()
                 .requestMatchers("/js/**").permitAll()
                 .requestMatchers("/images/**").permitAll()
+                .requestMatchers("/favicon.ico").permitAll()
                 .anyRequest().authenticated()
             );
 

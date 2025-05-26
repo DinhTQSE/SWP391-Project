@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login</title>
+    <script src="/js/auth.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,7 +75,7 @@
     </form>
 
     <div class="links">
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
+        <p>Don't have an account? <a href="register.html?action=forceRegister">Register here</a></p>
     </div>
 
     <div id="userInfo" class="user-info">
@@ -88,13 +89,12 @@
 
     <script>
         // Check if user is already logged in
-        const token = localStorage.getItem('token');
-        if (token) {
+        if (isAuthenticated()) {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('userInfo').style.display = 'block';
-            
+
             // Display user info from localStorage
-            const user = JSON.parse(localStorage.getItem('user'));
+            const user = getCurrentUser();
             if (user) {
                 document.getElementById('userUsername').textContent = user.username;
                 document.getElementById('userFullName').textContent = user.fullName;
@@ -105,15 +105,16 @@
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            
+
             const data = {
                 username: username,
                 password: password
             };
-            
+
+            // Use regular fetch for login since we don't have a token yet
             fetch('/api/auth/signin', {
                 method: 'POST',
                 headers: {
@@ -137,21 +138,24 @@
                     fullName: data.fullName,
                     roles: data.roles
                 }));
-                
+
                 // Show success message
                 const messageDiv = document.getElementById('message');
                 messageDiv.className = 'success';
                 messageDiv.textContent = 'Login successful!';
-                
+
                 // Hide login form and show user info
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('userInfo').style.display = 'block';
-                
+
                 // Display user info
                 document.getElementById('userUsername').textContent = data.username;
                 document.getElementById('userFullName').textContent = data.fullName;
                 document.getElementById('userEmail').textContent = data.email;
                 document.getElementById('userRoles').textContent = data.roles.join(', ');
+
+                // Test authenticated request
+                testAuthenticatedRequest();
             })
             .catch((error) => {
                 document.getElementById('message').className = 'error';
@@ -160,20 +164,42 @@
         });
 
         document.getElementById('logoutBtn').addEventListener('click', function() {
-            // Clear local storage
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            
+            logout();
+
             // Show login form and hide user info
             document.getElementById('loginForm').style.display = 'block';
             document.getElementById('userInfo').style.display = 'none';
-            
+
             // Clear message
             document.getElementById('message').textContent = '';
-            
+
             // Reset form
             document.getElementById('loginForm').reset();
         });
+
+        // Function to test authenticated requests
+        function testAuthenticatedRequest() {
+            console.log('Testing authenticated request...');
+            // Make a test request to a protected endpoint
+            sendAuthenticatedRequest('/api/public/test', {
+                method: 'GET'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Authenticated request successful');
+                    return response.json();
+                } else {
+                    console.error('Authenticated request failed');
+                    throw new Error('Authenticated request failed');
+                }
+            })
+            .then(data => {
+                console.log('Response data:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
     </script>
 </body>
 </html>

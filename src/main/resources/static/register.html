@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Registration</title>
+    <script src="/js/auth.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -73,27 +74,47 @@
             <label for="phone">Phone (optional):</label>
             <input type="text" id="phone" name="phone">
         </div>
+        <div class="form-group">
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+                <option value="Parent">Parent</option>
+                <option value="SchoolNurse">School Nurse</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+            </select>
+        </div>
         <button type="submit">Register</button>
     </form>
 
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const action = urlParams.get('action');
+
+        // Kiểm tra người dùng đã đăng nhập hay chưa - chỉ thực hiện một lần
+        if (isAuthenticated() && action !== 'forceRegister') {
+            // Chuyển hướng về trang đăng nhập (sẽ hiển thị thông tin người dùng)
+            window.location.href = 'login.html';
+        }
+    
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+    
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const fullName = document.getElementById('fullName').value;
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;
-            
+            const role = document.getElementById('role').value;
+    
             const data = {
                 username: username,
                 password: password,
                 fullName: fullName,
                 email: email,
-                phone: phone
+                phone: phone,
+                role: role
             };
-            
+    
             fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: {
@@ -106,8 +127,51 @@
                 const messageDiv = document.getElementById('message');
                 if (data.success) {
                     messageDiv.className = 'success';
-                    messageDiv.textContent = data.message;
+                    messageDiv.textContent = data.message + ' Đang chuyển hướng đến trang đăng nhập...';
                     document.getElementById('registrationForm').reset();
+    
+                    // Thêm thanh tiến trình đếm ngược
+                    let countdown = 3; // Thời gian đếm ngược (giây)
+                    
+                    // Tạo phần tử đếm ngược
+                    const countdownEl = document.createElement('div');
+                    countdownEl.className = 'countdown';
+                    countdownEl.innerHTML = `Chuyển hướng sau <span id="countdown-timer">${countdown}</span> giây`;
+                    messageDiv.appendChild(countdownEl);
+                    
+                    // Tạo thanh tiến trình
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'progress-bar';
+                    progressBar.innerHTML = '<div class="progress" style="width: 100%; transition: width ' + countdown + 's linear;"></div>';
+                    messageDiv.appendChild(progressBar);
+                    
+                    // Thêm CSS cho thanh tiến trình
+                    const style = document.createElement('style');
+                    style.innerHTML = `
+                        .countdown { margin-top: 10px; font-weight: bold; }
+                        .progress-bar { margin-top: 5px; height: 5px; background-color: #eee; border-radius: 3px; overflow: hidden; }
+                        .progress { height: 100%; background-color: #4CAF50; width: 100%; }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    // Đặt chiều rộng về 0% để tạo hiệu ứng
+                    setTimeout(() => {
+                        document.querySelector('.progress').style.width = '0%';
+                    }, 50);
+                    
+                    // Cập nhật đếm ngược
+                    const timer = setInterval(() => {
+                        countdown--;
+                        document.getElementById('countdown-timer').textContent = countdown;
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                        }
+                    }, 1000);
+    
+                    // Chuyển hướng đến trang đăng nhập sau khi đếm ngược kết thúc
+                    setTimeout(function() {
+                        window.location.href = 'login.html';
+                    }, countdown * 1000);
                 } else {
                     messageDiv.className = 'error';
                     messageDiv.textContent = data.message;
@@ -115,7 +179,7 @@
             })
             .catch((error) => {
                 document.getElementById('message').className = 'error';
-                document.getElementById('message').textContent = 'Error: ' + error;
+                document.getElementById('message').textContent = 'Lỗi: ' + error;
             });
         });
     </script>

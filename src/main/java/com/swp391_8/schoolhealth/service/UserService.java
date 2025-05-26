@@ -3,6 +3,7 @@ package com.swp391_8.schoolhealth.service;
 import com.swp391_8.schoolhealth.model.Role;
 import com.swp391_8.schoolhealth.model.Role.ERole;
 import com.swp391_8.schoolhealth.model.User;
+import com.swp391_8.schoolhealth.model.User.UserRole;
 import com.swp391_8.schoolhealth.repository.RoleRepository;
 import com.swp391_8.schoolhealth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public User registerUser(String username, String password, String fullName, String email, String phone) {
+    public User registerUser(String username, String password, String fullName, String email, String phone, UserRole role) {
         // Create new user
         User user = new User();
         user.setUsername(username);
@@ -40,12 +41,31 @@ public class UserService {
         user.setFullName(fullName);
         user.setEmail(email);
         user.setPhone(phone);
+        user.setRole(role);
 
-        // Set default role (PARENT)
+        // Set corresponding role in roles collection for backward compatibility
         Set<Role> roles = new HashSet<>();
-        Role parentRole = roleRepository.findByName(ERole.ROLE_PARENT)
-                .orElseThrow(() -> new RuntimeException("Error: Role PARENT is not found."));
-        roles.add(parentRole);
+        ERole eRole;
+        switch (role) {
+            case Parent:
+                eRole = ERole.ROLE_PARENT;
+                break;
+            case SchoolNurse:
+                eRole = ERole.ROLE_MEDICAL_STAFF;
+                break;
+            case Admin:
+                eRole = ERole.ROLE_ADMIN;
+                break;
+            case Manager:
+                eRole = ERole.ROLE_TEACHER;
+                break;
+            default:
+                eRole = ERole.ROLE_PARENT;
+        }
+
+        Role roleEntity = roleRepository.findByName(eRole)
+                .orElseThrow(() -> new RuntimeException("Error: Role " + eRole + " is not found."));
+        roles.add(roleEntity);
         user.setRoles(roles);
 
         // Save user

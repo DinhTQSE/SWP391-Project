@@ -17,34 +17,39 @@ import java.util.Set;
 public class MedicalEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_id")
     private Long id;
 
-    @Column(nullable = false)
-    private String eventType; // accident, fever, fall, etc.
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private LocalDateTime eventTime;
-
-    private String treatment;
-
-    private String status; // pending, resolved, etc.
-
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @ManyToOne
-    @JoinColumn(name = "staff_id")
-    private User staff;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "ENUM('Accident', 'Fever', 'Fall', 'Epidemic', 'Other')")
+    private EventType eventType;
 
-    @ManyToMany
-    @JoinTable(
-            name = "event_medications",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "medication_id")
-    )
-    private Set<Medication> medications = new HashSet<>();
+    public enum EventType {
+        Accident, Fever, Fall, Epidemic, Other
+    }
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "event_date", nullable = false)
+    private LocalDateTime eventDate;
+
+    @ManyToOne
+    @JoinColumn(name = "handled_by")
+    private User handledBy;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private Set<MedicalSupply> medicalSupplies = new HashSet<>();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

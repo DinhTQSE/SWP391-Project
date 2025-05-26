@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "medications")
@@ -15,30 +15,46 @@ import java.time.LocalDate;
 public class Medication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "medication_id")
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 
-    private String description;
+    @Column(name = "medication_name", nullable = false, length = 100)
+    private String medicationName;
 
-    private int quantity;
+    @Column(length = 50)
+    private String dosage;
 
-    private LocalDate expiryDate;
+    @Column(columnDefinition = "TEXT")
+    private String instructions;
+
+    @ManyToOne
+    @JoinColumn(name = "submitted_by")
+    private User submittedBy;
 
     @Enumerated(EnumType.STRING)
-    private MedicationType medicationType;
+    @Column(columnDefinition = "ENUM('Pending', 'Approved', 'Administered', 'Rejected') DEFAULT 'Pending'")
+    private MedicationStatus status = MedicationStatus.Pending;
 
-    public enum MedicationType {
-        SCHOOL_SUPPLY,
-        STUDENT_SUPPLY
+    public enum MedicationStatus {
+        Pending, Approved, Administered, Rejected
     }
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
-    private Student student; // only for STUDENT_SUPPLY
+    @JoinColumn(name = "administered_by")
+    private User administeredBy;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private User providedBy; // only for STUDENT_SUPPLY
+    @Column(name = "administered_at")
+    private LocalDateTime administeredAt;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

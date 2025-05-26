@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "health_checkups")
@@ -17,27 +16,46 @@ import java.util.Set;
 public class HealthCheckup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "checkup_id")
     private Long id;
 
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
+
+    @Column(name = "checkup_date", nullable = false)
+    private LocalDate checkupDate;
+
+    @Column(name = "checkup_type", length = 100)
     private String checkupType;
 
-    @Column(nullable = false)
-    private LocalDate scheduledDate;
+    @Column(columnDefinition = "TEXT")
+    private String result;
 
-    private String description;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "consent_status", columnDefinition = "ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending'")
+    private ConsentStatus consentStatus = ConsentStatus.Pending;
 
-    private String status; // PLANNED, APPROVED, COMPLETED
-
-    @ManyToMany
-    @JoinTable(
-            name = "checkup_students",
-            joinColumns = @JoinColumn(name = "health_checkup_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private Set<Student> students = new HashSet<>();
+    public enum ConsentStatus {
+        Pending, Approved, Rejected
+    }
 
     @ManyToOne
-    @JoinColumn(name = "coordinator_id")
-    private User coordinator;
+    @JoinColumn(name = "consent_by")
+    private User consentBy;
+
+    @Column(name = "follow_up_date")
+    private LocalDate followUpDate;
+
+    @ManyToOne
+    @JoinColumn(name = "performed_by")
+    private User performedBy;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

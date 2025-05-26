@@ -18,26 +18,35 @@ public class UserDetailsImpl implements UserDetails {
     private String username;
     private String email;
     private String fullName;
-    
+
     @JsonIgnore
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
 
+    private boolean isActive;
+
     public UserDetailsImpl(Long id, String username, String email, String fullName, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
+                           Collection<? extends GrantedAuthority> authorities, boolean isActive) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.fullName = fullName;
         this.password = password;
         this.authorities = authorities;
+        this.isActive = isActive;
     }
 
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
+        List<GrantedAuthority> authorities = new java.util.ArrayList<>();
+
+        // Add authority from the new role field
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+
+        // Also add authorities from the roles collection for backward compatibility
+        authorities.addAll(user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
 
         return new UserDetailsImpl(
                 user.getId(),
@@ -45,7 +54,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getEmail(),
                 user.getFullName(),
                 user.getPassword(),
-                authorities);
+                authorities,
+                user.getIsActive());
     }
 
     @Override
@@ -60,7 +70,7 @@ public class UserDetailsImpl implements UserDetails {
     public String getEmail() {
         return email;
     }
-    
+
     public String getFullName() {
         return fullName;
     }
@@ -77,22 +87,22 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return isActive;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isActive;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return isActive;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isActive;
     }
 
     @Override

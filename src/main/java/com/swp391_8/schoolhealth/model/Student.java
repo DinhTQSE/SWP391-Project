@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "students")
@@ -15,25 +16,43 @@ import java.time.LocalDate;
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "student_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "full_name", length = 100)
     private String fullName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(nullable = false)
+    @Column(length = 10)
     private String gender;
-
-    @Column(nullable = false)
-    private String className;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private User parent;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "health_record_id", referencedColumnName = "id")
+    @OneToOne
+    @JoinColumn(name = "health_record_id")
     private HealthRecord healthRecord;
+
+    @Column(length = 20)
+    private String className;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
