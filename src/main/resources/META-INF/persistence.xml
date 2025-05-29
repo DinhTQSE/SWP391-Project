@@ -4,15 +4,20 @@
              version="3.0">
     <persistence-unit name="com.haik.orm-PU" transaction-type="RESOURCE_LOCAL">
         <!-- Khai báo các entity class để map xuống table -->
+        <class>com.swp391_8.schoolhealth.model.CheckupResult</class>
         <class>com.swp391_8.schoolhealth.model.Consultation</class>
         <class>com.swp391_8.schoolhealth.model.HealthCheckup</class>
         <class>com.swp391_8.schoolhealth.model.HealthProfile</class>
+        <class>com.swp391_8.schoolhealth.model.HealthRecord</class>
         <class>com.swp391_8.schoolhealth.model.MedicalEvent</class>
         <class>com.swp391_8.schoolhealth.model.MedicalSupply</class>
         <class>com.swp391_8.schoolhealth.model.Medication</class>
+        <class>com.swp391_8.schoolhealth.model.Role</class>
         <class>com.swp391_8.schoolhealth.model.Student</class>
         <class>com.swp391_8.schoolhealth.model.User</class>
         <class>com.swp391_8.schoolhealth.model.Vaccination</class>
+        <class>com.swp391_8.schoolhealth.model.VaccinationEvent</class>
+        <class>com.swp391_8.schoolhealth.model.BlogPost</class>
 
         <!-- Cấu hình kết nối CSDL -->
         <properties>
