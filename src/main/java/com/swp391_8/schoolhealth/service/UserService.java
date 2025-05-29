@@ -59,6 +59,11 @@ public class UserService {
             case Manager:
                 eRole = ERole.ROLE_TEACHER;
                 break;
+            case Student:
+                // Map Student to ROLE_PARENT due to database constraint
+                // ROLE_STUDENT is not allowed by the database CHECK constraint
+                eRole = ERole.ROLE_PARENT;
+                break;
             default:
                 eRole = ERole.ROLE_PARENT;
         }

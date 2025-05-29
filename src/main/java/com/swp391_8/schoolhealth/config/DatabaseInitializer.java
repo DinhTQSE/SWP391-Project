@@ -48,14 +48,16 @@ public class DatabaseInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         // Initialize roles if they don't exist
-        Arrays.stream(ERole.values()).forEach(role -> {
-            if (roleRepository.findByName(role).isEmpty()) {
-                Role newRole = new Role();
-                newRole.setName(role);
-                roleRepository.save(newRole);
-                System.out.println("Created role: " + role);
-            }
-        });
+        Arrays.stream(ERole.values())
+              .filter(role -> role != ERole.ROLE_STUDENT) // Skip ROLE_STUDENT due to database constraint
+              .forEach(role -> {
+                  if (roleRepository.findByName(role).isEmpty()) {
+                      Role newRole = new Role();
+                      newRole.setName(role);
+                      roleRepository.save(newRole);
+                      System.out.println("Created role: " + role);
+                  }
+              });
 
         // Skip data initialization as per requirement
         System.out.println("Skipping sample data initialization as per requirement");

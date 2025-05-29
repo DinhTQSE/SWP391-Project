@@ -33,6 +33,10 @@ public class Student {
     private User parent;
 
     @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToOne
     @JoinColumn(name = "health_record_id")
     private HealthRecord healthRecord;
 

@@ -42,7 +42,7 @@ function sendAuthenticatedRequest(url, options = {}) {
                 console.error('Unauthorized request. Redirecting to login page.');
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                window.location.href = '/login.html';
+                window.location.href = '/';
                 throw new Error('Unauthorized');
             }
             return response;
@@ -72,5 +72,5 @@ function getCurrentUser() {
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/login.html';
+    window.location.href = '/';
 }

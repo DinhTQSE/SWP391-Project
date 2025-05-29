@@ -41,7 +41,8 @@ public class User {
         Parent,
         SchoolNurse,
         Admin,
-        Manager
+        Manager,
+        Student
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
